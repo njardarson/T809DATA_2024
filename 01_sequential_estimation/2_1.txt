@@ -1,0 +1,7 @@
+Questions: 
+    1. Do you expect the batch estimate to be exactly (-1,2)?
+    2. Which two parameters can be used to make this estimate more accurate?
+Answers: 
+    1. Due to sampling variability the batch estimate might not be exactly (-1, 2). However the sample mean should converge to the population mean as more samples are drawn.
+    2. Increase the the number of samples and reduce the standard deviation. 
+    Bonus Answer: In matter of fact we can use confidence intervals in order to provide insight into the reliability of the estimate and add mean squared error to improve the accuracy of the batch estimate.
