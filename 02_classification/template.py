@@ -125,8 +125,6 @@ if __name__ == "__main__":
     class_cov = covar_of_class(train_features, train_targets, 0)
     print(f"Covariance of class 0: {class_cov:.4f}")
     
-    
-    
     print(f"Likelihoods of the features: {likelihood_of_class(test_features[0:3], class_mean, class_cov)}")
     
     maximum_likelihood(train_features, train_targets, test_features, classes)
