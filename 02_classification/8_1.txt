@@ -1,0 +1,27 @@
+Questions: 
+    A: Compare the accuracy of both datasets, if the results are different what explains the difference:
+    B: What happens when you change the:
+        1. Nunmber of datapoints
+        2. Mean of the normal distribution
+        3. Standard deviation of the normal distribution
+Answers:
+    A: 
+        After running the procedure a couple of times with same amount of data points (50), the original data set returns accuracy approx. 
+        between 0.4850 - 0.5150 but the new dataset however returns accuracy exactly 0.5000 each time. This suggests several potential factors 
+        influencing the performance difference: 
+            The model generalization is failing.
+            Distribution shift.
+            Decision boundary misalignment
+            The model is predicting one class for all inputs which is a sign of overfitting to irrelevant features or underfitting where 
+            significant features are not learned.
+
+    B: 
+        1. If I reduce the number of datapoints it reduces the data available for learning which leads to poorer performance (increased variance
+        difference between runs with same datapoints e.g. the accuracy results vary). If I increase the number of datapoints I expect the 
+        accuracy to improve, however if the model cannot generalize well (see answer to A) it may not improve accuracy.
+
+        2. Closer Means: Makes it harder for the model to differentiate between classes because the overlap between class distributions increases.
+        Farther Apart Means: Improves class distinguishability by reducing overlap, generally increasing model accuracy.
+
+        3. Increase: Class distributions spread wider -> more challenging for the model to assign the correct class labels (reducing accuracy).
+        Decrease: Results in tighter data clusters around the class means -> simplifies the classification task for the model (higher accuracy).

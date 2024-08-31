@@ -1,4 +1,4 @@
-# Author:
+# Author: Arnar Njaðarson
 # Date:
 # Project:
 # Acknowledgements:
@@ -55,7 +55,7 @@ def likelihood_of_class(feature: np.ndarray, class_mean: np.ndarray, class_covar
         raise ValueError("Covariance matrix is singular and cannot be used for density estimation.")
 
     # Calculate the probability density for each feature point
-    return multivariate_normal(mean=class_mean, cov=class_covar).pdf(features)
+    return multivariate_normal(mean=class_mean, cov=class_covar).pdf(feature)
 
 def maximum_likelihood(train_features: np.ndarray, train_targets: np.ndarray, test_features: np.ndarray, classes: list) -> np.ndarray:
     '''
@@ -68,8 +68,9 @@ def maximum_likelihood(train_features: np.ndarray, train_targets: np.ndarray, te
 
     likelihoods = []
     for test_feature in test_features:
-        class_likelihoods = [likelihood_of_class(test_feature, mean, cov) for mean, cov in zip(means, covs)]
-        likelihoods.append(class_likelihoods)
+        # Here ensure that likelihood_of_class returns a single row of likelihoods per test feature
+        feature_likelihoods = [likelihood_of_class(test_feature, mean, cov) for mean, cov in zip(means, covs)]
+        likelihoods.append(feature_likelihoods)
     return np.array(likelihoods)
 
 def predict(likelihoods: np.ndarray):
@@ -100,9 +101,13 @@ def plot_data(features, targets):
     plt.grid(True)
     plt.show()
     
+def calculate_accuracy(predictions, actual_labels):
+    correct_predictions = predictions == actual_labels
+    accuracy = np.mean(correct_predictions)
+    return accuracy
+    
 if __name__ == "__main__":
     # SECTION 1: Generate and split the dataset
-    # Generate and split the dataset
     features, targets, classes = gen_data(50, [-1, 1], [5, 5])
     (train_features, train_targets), (test_features, test_targets) = split_train_test(features, targets, train_ratio=0.8)
 
@@ -111,24 +116,37 @@ if __name__ == "__main__":
     print("Training targets:", train_targets)
     print("Test targets:", test_targets)
     
-    # SECTION 2: Calculate the maximum likelihood
+    # SECTION 2: 
     plot_data(features, targets)
     
-    #SECTION 3: MEAN OF CLASS
-    # Calculate and store means for each class
+    # SECTION 3
     class_means = {mean_of_class(train_features, train_targets, 0)}
     
     class_mean = mean_of_class(train_features, train_targets, 0)
-    print(f"Mean of class 0: {class_mean:.4f}")
+    print(f"Mean of class: {class_mean:.4f}")
     
-    # Calculate covariance for a specific class, e.g., class 0
+   # SECTION 4
     class_cov = covar_of_class(train_features, train_targets, 0)
-    print(f"Covariance of class 0: {class_cov:.4f}")
+    print(f"Covariance of class: {class_cov:.4f}")
     
+    # SECTION 5
     print(f"Likelihoods of the features: {likelihood_of_class(test_features[0:3], class_mean, class_cov)}")
     
+    # SECTION 6
     maximum_likelihood(train_features, train_targets, test_features, classes)
     print(f"Maximum Likelihood: {maximum_likelihood(train_features, train_targets, test_features, classes)}")
     
+    # SECTION 7
     likelihoods = maximum_likelihood(train_features, train_targets, test_features, classes)
-    print(f"predict(likelihoods) -> {predict(likelihoods)}")
+    predictions = predict(likelihoods)
+    print(f"predict(likelihoods) -> {predictions}")
+  
+    # SECTION 8
+    accuracy = calculate_accuracy(predictions, test_targets)
+    print(f"Dataset accuracy: {accuracy:.4f}")
+    # New dataset defined and implemented
+    new_features, new_targets, new_classes = gen_data(50, [-4, 4], [2, 2])
+    new_likelihoods = maximum_likelihood(train_features, train_targets, new_features, classes)
+    new_predictions = predict(new_likelihoods)
+    new_accuracy = calculate_accuracy(new_predictions, new_targets)
+    print(f"New dataset accuracy: {new_accuracy:.4f}")
