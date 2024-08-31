@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Author: Arnar Ingi Njardarson
+# Author: Arnar Njarðarson
 # Date:
 # Project: 
 # Acknowledgements: 
@@ -49,8 +49,6 @@ def _plot_sequence_estimate():
     plt.legend()
     plt.show()
 
-
-
 def _square_error(y, y_hat):
     return (y - y_hat) ** 2
 
@@ -75,27 +73,32 @@ def _plot_mean_square_error():
 
 
 if __name__ == "__main__":
-    np.random.seed(1234)
+    # SECTION 1: EXAMPLES
+
     # Example 1: Small dataset
+    np.random.seed(1234)
     example1 = gen_data(2, 3, np.array([0, 1, -1]), 1.3)
     print("Example 1 output:")
     print(example1)
     print("\n")
 
-    np.random.seed(1234)
     # Example 2: Larger dataset
+    np.random.seed(1234)
     example2 = gen_data(5, 1, np.array([0.5]), 0.5)
     print("Example 2 output:")
     print(example2)
     print("\n")
-    
+
+    # SECTION 3
     np.random.seed(1234)  # Set seed for reproducibility
-    X = gen_data(10, 2, np.array([0, 0]), 1)  # 10 2-dimensional points
+    X = gen_data(300, 2, np.array([-1, 2]), 2)
     mean = np.mean(X, 0)  # Calculate the initial mean of the generated data
     new_x = gen_data(1, 2, np.array([0, 0]), 1)
     updated_mean = update_sequence_mean(mean, new_x, X.shape[0] + 1)
     
     print("Updated mean:", updated_mean)
 
+    # SECTION 4
     _plot_sequence_estimate()
+    # SECTION 5
     _plot_mean_square_error()
