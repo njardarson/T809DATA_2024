@@ -31,11 +31,32 @@ def mvn_basis(
     * fi - [NxM] is the basis function vectors containing a basis function
     output fi for each data vector x in features
     '''
-    pass
+    N, D = features.shape
+    M = mu.shape[0]
+    fi = torch.zeros(N, M)
+    
+    covariance_matrix = var * torch.eye(D)
+    
+    for i in range(M):
+        mvn = multivariate_normal(mean=mu[i].numpy(), cov=covariance_matrix.numpy())
+        fi[:, i] = torch.tensor(mvn.pdf(features.numpy()))
+    
+    return fi
 
-
-def _plot_mvn():
-    pass
+def _plot_mvn(fi: torch.Tensor):
+    plt.figure(figsize=(8, 6))
+    
+    # Plot each basis function output (each column in fi is a basis function)
+    for i in range(fi.shape[1]):
+        plt.plot(fi[:, i].numpy(), label=f'Basis {i+1}')
+    
+    # Add labels, legend, and show plot
+    plt.xlabel('Data Index')
+    plt.ylabel('Basis Function Output')
+    plt.title('Output of Each Basis Function')
+    plt.legend(loc='upper right')
+    plt.savefig('2_1.png')  # Save the plot as '2_1.png'
+    plt.show()
 
 
 def max_likelihood_linreg(
@@ -53,7 +74,15 @@ def max_likelihood_linreg(
 
     Output: [Mx1], the maximum likelihood estimate of w for the linear model
     '''
-    pass
+    N,M = fi.shape
+    I = torch.eye(M)
+    
+    regularized_g_matrix = fi.T @ fi + lamda * I
+    inverse_g_matrix = torch.inverse(regularized_g_matrix)
+    
+    w_ml = inverse_g_matrix @ fi.T @ targets
+    
+    return w_ml
 
 
 def linear_model(
@@ -74,11 +103,47 @@ def linear_model(
 
     Output: [Nx1] The prediction for each data vector in features
     '''
-    pass
+    fi = mvn_basis(features, mu, var)
+    
+    predictions = fi @ w
+    
+    return predictions
 
 
 if __name__ == "__main__":
     """
     Keep all your test code here or in another file.
     """
-    pass
+    X, t = load_regression_iris()
+    N, D = X.shape
+    
+    # Define the number of basis functions (M) and variance (var)
+    M, var = 10, 10
+    mu = torch.zeros((M, D))
+    
+    # Define the means of the Gaussian basis functions
+    for i in range(D):
+        mmin = torch.min(X[:, i])
+        mmax = torch.max(X[:, i])
+        mu[:, i] = torch.linspace(mmin, mmax, M)
+    
+    # Compute the basis functions
+    fi = mvn_basis(X, mu, var)
+    
+    # Set the regularization constant
+    lamda = 0.1
+    
+    w = max_likelihood_linreg(fi, t, lamda)
+    
+    predictions = linear_model(X, mu, var, w)
+    
+    _plot_mvn(fi)
+    
+    print("fi:\n", fi)
+
+    lamda = 0.001
+    w_ml = max_likelihood_linreg(fi, t, lamda)
+    print("Wights with regularization:\n", w_ml)
+    wml = max_likelihood_linreg(fi, t, lamda) # as before
+    prediction = linear_model(X, mu, var, wml)
+    print("Predictions with regularization:\n", prediction) 
