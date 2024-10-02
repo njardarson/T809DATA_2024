@@ -1,7 +1,7 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
+# Author: Arnar Ingi Njardarson
+# Date: 10. sept 2024
+# Project: Linear Regression
+# Acknowledgements: My past, present and future self
 #
 
 import torch
@@ -109,6 +109,34 @@ def linear_model(
     
     return predictions
 
+def mse(actual: torch.Tensor, predicted: torch.Tensor) -> float:
+    squared_diff = (actual - predicted) ** 2
+    mse = torch.mean(squared_diff).item()  # Convert tensor to float
+    return mse
+
+# Function to plot actual vs predicted values
+def plot_actual_vs_predicted(actual, predicted):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(actual, predicted, color='blue', label='Predicted vs Actual')
+    plt.plot([min(actual), max(actual)], [min(actual), max(actual)], 'r-', label='Perfect Prediction')
+    plt.xlabel('Actual Values')
+    plt.ylabel('Predicted Values')
+    plt.title('Actual vs Predicted Values')
+    plt.legend()
+    plt.show()
+
+# Function to plot Mean Squared Error
+def plot_mse(actual, predicted):
+    mse_value = mse(actual, predicted)
+    
+    plt.figure(figsize=(8, 6))
+    plt.bar(['Mean Squared Error'], [mse_value])
+    plt.title('Mean Squared Error (MSE)')
+    plt.ylabel('MSE')
+    plt.show()
+    
+    return mse_value
+
 
 if __name__ == "__main__":
     """
@@ -146,4 +174,12 @@ if __name__ == "__main__":
     print("Wights with regularization:\n", w_ml)
     wml = max_likelihood_linreg(fi, t, lamda) # as before
     prediction = linear_model(X, mu, var, wml)
-    print("Predictions with regularization:\n", prediction) 
+    print("Predictions with regularization:\n", prediction)
+    
+      # Plot and compare the actual vs predicted values
+    plot_actual_vs_predicted(t.numpy(), predictions.detach().numpy())
+    
+    # Plot the MSE and return its value
+    mse_value = plot_mse(t, predictions)
+    
+    print(f"Mean Squared Error: {mse_value:.4f}")

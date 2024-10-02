@@ -1,0 +1,11 @@
+How good are these predictions: 
+
+We got MSE = 1.9271, with a target range of min = 0.1 and max = 2.5
+The variance of target values is 0.5810 so the baseline MSE (predicting mean)
+is 0.5771.
+
+The MSE of 1.9271 is not good since it is significantly higher then both the variance of the 
+target values and the baseline MSE.
+
+The model is performing worse than a simple baseline model that predicts the mean of the target
+values for all inputs, which indicates that there is room for improvement ...
